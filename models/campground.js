@@ -1,5 +1,7 @@
 const mongoose = require('mongoose'); 
+const Review = require('./review');
 const Schema = mongoose.Schema;     
+
 
 const CampgroundSchema = new Schema({
     title: String, 
@@ -7,7 +9,27 @@ const CampgroundSchema = new Schema({
     price: Number, 
     description: String, 
     location: String,
+    reviews: [
+        {
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Review' 
+        }
+    ]
 })
+
+//'findOneAndDelete' is inbuilt middleware function. 
+//use documentation for better understaing. 
+CampgroundSchema.post('findOneAndDelete', async function(doc){
+    if(doc){
+        // this is remove function where we can write query type arguments. 
+        await Review.deleteMany({
+            _id: {
+                $in: doc.reviews, 
+            }
+        })
+    }
+})
+
 
 const Campground = mongoose.model("Campground", CampgroundSchema); 
 
