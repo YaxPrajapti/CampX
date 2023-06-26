@@ -6,9 +6,13 @@ const flash = require('connect-flash');
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const session = require('express-session'); 
+const passport = require('passport'); 
+const localStrategy = require('passport-local'); 
 const ExpressError = require("./utils/ExpressError");
 const campgroundRouter = require('./routes/campgrounds'); 
 const reviewRouter = require('./routes/reviews'); 
+const User = require('./models/user'); 
+const authRouter = require('./routes/auth');
 
 mongoose.connect("mongodb://127.0.0.1:27017/campX");
 const db = mongoose.connection;
@@ -37,22 +41,31 @@ const sessionConfig = {
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
+
 app.use(session(sessionConfig))
 app.use(flash());
+app.use(passport.initialize()); 
+app.use(passport.session()); //passport.session() is used for persistent login sessions. 
+
+passport.use(new localStrategy(User.authenticate())); 
+
+passport.serializeUser(User.serializeUser()); //how do you store User in that session. 
+passport.deserializeUser(User.deserializeUser()); 
 
 app.use((req, res, next) => {
+    res.locals.currentUser = req.user;  
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
-})
+});
 
+app.use('/auth', authRouter); 
 app.use('/campgrounds', campgroundRouter)
-app.use('/campgrounds/:id/reviews', reviewRouter)
+app.use('/campgrounds/:id/reviews', reviewRouter);
 
 app.get('/', (req, res) => {
     res.render('home')
 });
-
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
