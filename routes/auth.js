@@ -5,15 +5,15 @@ const passport = require('passport');
 const { storeReturnTo } = require('../middleware');
 const authController = require('../controllers/auth');
 
+router.route('/register')
+    .get(authController.getRegisterUser)
+    .post(catchAsync(authController.postRegisterUser));
 
-router.get('/register', authController.getRegisterUser);
-router.post('/register', catchAsync(authController.postRegisterUser));
+router.route('/login')
+    .get(authController.getLogin)
+    .post(storeReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/auth/login' }), authController.postLogin)
 
-router.get('/login', authController.getLogin);
-
-router.post('/login', storeReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/auth/login' }), authController.postLogin);
-
-router.get('/logout', authController.getLogout);
-
+router.route('/logout')
+    .get(authController.getLogout)
 
 module.exports = router; 
