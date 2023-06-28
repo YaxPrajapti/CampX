@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV != 'production'){
+    require('dotenv').config(); 
+}
+
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
@@ -6,6 +10,7 @@ const flash = require('connect-flash');
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const session = require('express-session'); 
+var rfs = require('rotating-file-stream'); 
 const passport = require('passport'); 
 const localStrategy = require('passport-local'); 
 const ExpressError = require("./utils/ExpressError");
@@ -23,13 +28,18 @@ db.once("open", () => {
 
 const app = express();
 
+const accessLogStream = rfs.createStream('access.log', {
+    interval: '1d', // rotate daily
+    path: path.join(__dirname, 'log')
+  })
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(morgan('combined', { stream: accessLogStream }))
 
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
