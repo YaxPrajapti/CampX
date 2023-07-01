@@ -11,6 +11,7 @@ exports.getNewCampground = (req, res) => {
   }; 
 
 exports.postNewCampground = async (req, res) => {
+    req.files.map(f => ({url: f.path, filename: f.filename}));  
     const campground = new Campground(req.body.campground);
     campground.owner = req.user._id;
     await campground.save();
