@@ -2,7 +2,7 @@ const Review = require('../models/review.js');
 const Campground = require('../models/campground.js');
 
 module.exports.postNewReview = async (req, res) => {
-    console.log(req.params.id);
+    // console.log(req.params.id);
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
     review.owner = req.user._id;

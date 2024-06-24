@@ -12,6 +12,11 @@ module.exports.getNewCampground = (req, res) => {
 module.exports.postNewCampground = async (req, res, next) => {
     const campground = new Campground(req.body.campground);
     campground.owner = req.user._id; // save loggedin user as owner. 
+    campground.image = req.files.map(file => ({
+        url: file.path,
+        filename: file.filename
+    }));
+    console.log(campground);
     await campground.save();
     req.flash('success', "New campground is created");
     res.redirect(`/campgrounds/${campground._id}`)
@@ -25,7 +30,7 @@ module.exports.getCampgroundFromId = async (req, res,) => {
             select: 'username email'
         }
     }).populate('owner', 'username email');
-    console.log(campground);
+    // console.log(campground);
     if (!campground) {
         req.flash("error", "This campground does not exist anymore");
         return res.redirect('/campgrounds');
@@ -50,6 +55,14 @@ module.exports.putCampgroundEdit = async (req, res) => {
         req.flash("error", "This campground does not exist anymore");
         return res.redirect('/campgrounds');
     }
+    const images = req.files.map(file => ({
+        url: file.path,
+        filename: file.filename
+    }));
+    images.forEach(image => {
+        campground.image.push(image);
+    });
+    await campground.save();
     req.flash('success', 'Campground updated');
     res.redirect(`/campgrounds/${campground._id}`)
 }
