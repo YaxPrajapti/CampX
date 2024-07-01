@@ -1,16 +1,24 @@
 const mongoose = require('mongoose');
 const Review = require('./review');
-const { required, ref } = require('joi');
+const { required, ref, func } = require('joi');
 const Schema = mongoose.Schema;
+
+const imageSchema = new Schema({
+    url: String,
+    filename: String,
+})
+
+imageSchema.virtual('thumbnail_url').get(function() {
+    return this.url.replace('/upload','/upload/w_220'); 
+})
+
+imageSchema.virtual('scaled_image').get(function() {
+    return this.url.replace('/upload','/upload/w_300/h_300'); 
+})
 
 const CampgroundSchema = new Schema({
     title: String,
-    image: [
-        {
-            url: String,
-            filename: String,
-        }
-    ],
+    image: [imageSchema],
     price: Number,
     description: String,
     location: String,
@@ -37,3 +45,5 @@ CampgroundSchema.post('findOneAndDelete', async function (doc) {
 })
 
 module.exports = mongoose.model('Campground', CampgroundSchema);
+
+//https://res.cloudinary.com/diyrbdg91/image/upload/w_200/v1719834353/campX/n4oaemzlocq3mim52hdp.png
