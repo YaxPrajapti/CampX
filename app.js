@@ -19,8 +19,10 @@ const campgroundRoutes = require('./routes/campgrounds.js');
 const reviewRoutes = require('./routes/reviews.js');
 const authRoutes = require('./routes/user.js');
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.NODE_ENV == 'production' ? process.env.MONGO_URI_PROD : process.env.MONGO_URI_DEV;
 const PORT = process.env.PORT || 5000;
+
+console.log("Connected to: ", MONGO_URI); 
 
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
