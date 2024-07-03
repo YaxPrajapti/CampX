@@ -8,12 +8,12 @@ const imageSchema = new Schema({
     filename: String,
 })
 
-imageSchema.virtual('thumbnail_url').get(function() {
-    return this.url.replace('/upload','/upload/w_220'); 
+imageSchema.virtual('thumbnail_url').get(function () {
+    return this.url.replace('/upload', '/upload/w_220');
 })
 
-imageSchema.virtual('scaled_image').get(function() {
-    return this.url.replace('/upload','/upload/w_300/h_300'); 
+imageSchema.virtual('scaled_image').get(function () {
+    return this.url.replace('/upload', '/upload/w_300/h_300');
 })
 
 const CampgroundSchema = new Schema({
@@ -22,6 +22,17 @@ const CampgroundSchema = new Schema({
     price: Number,
     description: String,
     location: String,
+    geometry: {
+        type: {
+            type: String, 
+            enum: ['Point'], 
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     owner: {
         type: Schema.Types.ObjectId,
         ref: "User",
