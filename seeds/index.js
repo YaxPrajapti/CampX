@@ -4,7 +4,7 @@ const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campground');
 
 
-mongoose.connect('mongodb+srv://yaxprajapati6504:xcrmu3cxDJUSnIl3@cluster0.z6dzmns.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://yaxprajapati6504:xcrmu3cxDJUSnIl3@cluster0.z6dzmns.mongodb.net/campx?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
