@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const cities = require('./cities');
 const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campground');
-require('dotenv').config({ path: '../.env' });
 
-mongoose.connect(process.env.MONGO_URI, {
+
+mongoose.connect('mongodb+srv://yaxprajapati6504:xcrmu3cxDJUSnIl3@cluster0.z6dzmns.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
@@ -22,16 +22,30 @@ const sample = array => array[Math.floor(Math.random() * array.length)];
 
 const seedDB = async () => {
     await Campground.deleteMany({});
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 200; i++) {
         const random1000 = Math.floor(Math.random() * 1000);
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({
+            //YOUR USER ID
+            owner: '668594cb9a2c80f6abb7451a',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
-            image: 'https://api.api-ninjas.com/v1/randomimage',
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam dolores vero perferendis laudantium, consequuntur voluptatibus nulla architecto, sit soluta esse iure sed labore ipsam a cum nihil atque molestiae deserunt!',
             price,
-            owner: '66705e8dc769fb2cd141cf28',
+            geometry: {
+                type: "Point",
+                coordinates: [cities[random1000].longitude, cities[random1000].latitude]
+            },
+            images: [
+                {
+                    url: 'https://res.cloudinary.com/diyrbdg91/image/upload/v1720108977/campX/mecjn9xe6bujd3gm5qky.jpg',
+                    filename: 'campX/mecjn9xe6bujd3gm5qky'
+                },
+                {
+                    url: 'https://res.cloudinary.com/diyrbdg91/image/upload/v1720108977/campX/mecjn9xe6bujd3gm5qky.jpg',
+                    filename: 'campX/mecjn9xe6bujd3gm5qky'
+                }
+            ]
         })
         await camp.save();
     }
