@@ -1,6 +1,4 @@
-
 mapboxgl.accessToken = maptoken;
-console.log(campground.geometry.coordinates)
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',

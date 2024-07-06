@@ -1,3 +1,35 @@
+
+const getUserLocation = (callback) => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+    } else {
+        alert('It seems like Geolocation, which is required for this page, is not enabled in your browser. Please use a browser which supports it.');
+    }
+
+    function successFunction(position) {
+        console.log("Calling this function");
+        var lat = position.coords.latitude;
+        var long = position.coords.longitude;
+        console.log('Your latitude is :' + lat + ' and longitude is ' + long);
+        callback([lat, long]);
+    }
+
+    function errorFunction() {
+        console.error("Can't get your location, use default location");
+        callback(null);
+    }
+}
+
+getUserLocation((coords) => {
+    if (coords) {
+        const [lat, long] = coords;
+        console.log(`Latitude: ${lat}, Longitude: ${long}`);
+    } else {
+        console.log('Failed to get location');
+    }
+});
+
+
 // TO MAKE THE MAP APPEAR YOU MUST
 // ADD YOUR ACCESS TOKEN FROM
 // https://account.mapbox.com
@@ -6,7 +38,7 @@ const map = new mapboxgl.Map({
     container: 'map',
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: 'mapbox://styles/mapbox/dark-v11',
-    center: [-103.5917, 40.6699],
+    center: [78.9629, 20.5937],
     zoom: 3
 });
 
@@ -105,24 +137,13 @@ map.on('load', () => {
     // the location of the feature, with
     // description HTML from its properties.
     map.on('click', 'unclustered-point', (e) => {
+        const popup_text = e.features[0].properties.popUpMarkUp;
+        // const popup_text = e.feature[0].properties.popUpMarkUp;  
         const coordinates = e.features[0].geometry.coordinates.slice();
-        const mag = e.features[0].properties.mag;
-        const tsunami =
-            e.features[0].properties.tsunami === 1 ? 'yes' : 'no';
-
-        // Ensure that if the map is zoomed out such that
-        // multiple copies of the feature are visible, the
-        // popup appears over the copy being pointed to.
-        if (['mercator', 'equirectangular'].includes(map.getProjection().name)) {
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
-        }
-
         new mapboxgl.Popup()
             .setLngLat(coordinates)
             .setHTML(
-                `magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`
+                popup_text,
             )
             .addTo(map);
     });
